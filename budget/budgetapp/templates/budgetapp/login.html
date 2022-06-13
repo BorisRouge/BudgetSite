@@ -1,0 +1,13 @@
+    
+
+<!--Login--> 
+<div class="container py-5">
+	<h1>Login</h1>
+	<form method="POST" action="login">
+		{% csrf_token %}
+		{{ form }}                    
+		<button class="btn btn-primary" type="submit">Login</button>
+	</form>
+	<!--<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>--> 
+</div>
+
