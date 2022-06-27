@@ -22,5 +22,7 @@ urlpatterns = [
     path ('', views.register_request, name='register'),# make it a homepage later, and registration should be a part of it
     path ('login', views.login_view, name ='login'),
     #path("", views.homepage, name="homepage"),
-    path("budget/", include('budgetapp.urls'))
+    path("budget/", include('budgetapp.urls')),
+    path('ajax/load-categories/', 
+          views.AccountView.load_categories, name='ajax_load_categories'),
 ]

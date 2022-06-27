@@ -21,7 +21,9 @@ class Category(models.Model):
 
 class Ledger(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE) #primary_key=True might cause problems
-    transaction_id = models.BigAutoField(primary_key=True)
+    transaction_id = models.BigAutoField(primary_key=True) #should primary_key=True be here?
     transaction_time = models.DateTimeField (auto_now=True) #should it be auto_now?
     amount = models.DecimalField(max_digits=19,decimal_places=2)
     description = models.CharField(max_length=50)
+    def __str__(self):
+        return self.description

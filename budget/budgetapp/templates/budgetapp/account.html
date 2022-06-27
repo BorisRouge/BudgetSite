@@ -2,17 +2,54 @@
 
 <!--Login--> 
 <div class="container py-5">
-	<h1>Success, {{user.username}}</h1>
+	<h1>Welcome, {{user.username}}</h1>
 	<form method="POST" action="account">
 		{% csrf_token %}
-		{{category_form.as_p}}
-		<button class="btn btn-primary" type="submit"> Create</button>
-	</form>
-	{{transaction_form}}
+		{{category_form.as_table}}
+		<button class="btn btn-primary" type="submit" name="create_category"> Create</button>
+	</form >
+
 	<!--<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>--> 
 </div>
 
 <div>
-	<h2>{{ user_categories}}</h2>
-	{{select_category_form.as_p}}
+	<h2>{{user_categories}}</h2>	
+	<form method="post" id="categoryForm" categories-url="{% url 'ajax_load_categories' %}" novalidate>
+	{{select_category_form.as_p}} <!--Need to use some kind of JS to make the selection and display dependent-->	
+	
+	</form>
+	{{current_category_balance}}
+	<pre>{{category_display}}</pre>
+
+	<form method="POST" action="account">
+		{% csrf_token %}
+		{{transaction_form.as_p}}
+		<button class="btn btn-secondary" type="submit" 
+				name="submit_transaction"> Submit</button>
+	{% for message in messages %}
+	{{ message }}
+	{% endfor %}
+	</form>
 </div>
+
+<script src="https://jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+	$("#category_id").change(function() {
+		var url = $("#select_category_form").attr("categories-url");
+		var categoryId = $(this).val();
+
+		$.ajax({
+			url: url,
+			data: {
+				'category': categoryId
+			},
+			success: function(data){
+				$("")
+			}
+		})
+	}
+	
+	
+	
+	)
+</script>

@@ -1,7 +1,9 @@
+from unicodedata import decimal
+from decimal import Decimal as dec
+
+
 class Category (object):
-  def __init__(self, category_name):
-    ledger = []
-    balance = 0
+  def __init__(self, category_name, balance = 0,ledger = []):
     deposit_counter = 0                                      
     withdrawal_counter = 0                                   
     self.Category = Category #is it needed?
@@ -11,7 +13,7 @@ class Category (object):
     self.deposit_counter = deposit_counter                   
     self.withdrawal_counter = withdrawal_counter             
 
-  def __str__(self): #called by print, might need some work
+  def display (self): #to be deleted, was moved to an external function to be mapped with the database
     title_line = f'{self.category_name}'.center (30, "*")
     lines = []
     i = 0
@@ -37,17 +39,19 @@ class Category (object):
   def deposit (self, amount, description = ''):
     item = {"amount": amount, "description": description}
     self.ledger.append (item)
-    self.balance +=amount
-    self.deposit_counter +=amount
+    self.balance +=dec(amount)
+    self.deposit_counter +=dec(amount)
 
   def withdraw (self, amount, description = ''):
-    if self.balance >= amount:
+    amount = dec(amount)
+    if self.balance >= dec(amount):
       item = {"amount": -amount, "description": description}
       self.ledger.append (item)
-      self.balance -=amount
-      self.withdrawal_counter +=amount
+      self.balance -=dec(amount)
+      self.withdrawal_counter +=dec(amount)
       return True
     else:
+      print("Faulty withdraw")
       return False
   
   def get_balance (self):
@@ -102,9 +106,6 @@ def create_spend_chart (categories):
   for category in categories:
     calculation = int((category.withdrawal_counter/total)*10)
     category_share.append(calculation)
-  
-  
-  
   
   category_lengths = []
   for category in categories:                                #
@@ -161,6 +162,25 @@ def create_spend_chart (categories):
   
     
 
+def display (category_name, ledger, balance): #called by print, might need some work (changed from __str__ to display)
+    """External display function"""
+    title_line = f'{category_name}'.center (30, "*")
+    lines = []
+    i = 0
+    while i < len(ledger):                                #  
+      item = ledger[i]                                    #formatting
+      n = len(item['description'])                             #     
+      if n > 23:
+        n = 23      
+      lines.append(str(item['description'])[:23]+"{:.2f}".format(float(item['amount'])).rjust(30-n))
+      i+= 1
+    result = f'{title_line}\n'
+                                                              #
+    for x in lines:                                           # result 
+      result += f'{x}\n'                                      #
+    result += f'Total: {"{:.2f}".format(balance)}'
+    
+    return result
 
 
     
