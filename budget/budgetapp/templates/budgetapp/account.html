@@ -1,7 +1,7 @@
     
 
 <!--Login--> 
-<div class="container py-5">
+<div>
 	<h1>Welcome, {{user.username}}</h1>
 	<form method="POST" action="account">
 		{% csrf_token %}
@@ -12,16 +12,17 @@
 	<!--<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>--> 
 </div>
 
-<div>
+<div id="categories_and_transactions">
+	<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
 	<h2>{{user_categories}}</h2>	
-	<form method="post" id="categoryForm" categories-url="{% url 'ajax_load_categories' %}" novalidate>
-	{{select_category_form.as_p}} <!--Need to use some kind of JS to make the selection and display dependent-->	
 	
-	</form>
+	<form hx-get="account/load_categories" hx-trigger="change">
+		
+	{{select_category_form.as_p}} <!--Need to use some kind of JS to make the selection and display dependent-->	
+	</form>	
 	{{current_category_balance}}
-	<pre>{{category_display}}</pre>
-
-	<form method="POST" action="account">
+	
+	<form id='target' method="POST" action="account">
 		{% csrf_token %}
 		{{transaction_form.as_p}}
 		<button class="btn btn-secondary" type="submit" 
@@ -32,24 +33,3 @@
 	</form>
 </div>
 
-<script src="https://jquery.com/jquery-3.3.1.min.js"></script>
-<script>
-	$("#category_id").change(function() {
-		var url = $("#select_category_form").attr("categories-url");
-		var categoryId = $(this).val();
-
-		$.ajax({
-			url: url,
-			data: {
-				'category': categoryId
-			},
-			success: function(data){
-				$("")
-			}
-		})
-	}
-	
-	
-	
-	)
-</script>

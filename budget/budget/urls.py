@@ -23,6 +23,7 @@ urlpatterns = [
     path ('login', views.login_view, name ='login'),
     #path("", views.homepage, name="homepage"),
     path("budget/", include('budgetapp.urls')),
-    path('ajax/load-categories/', 
-          views.AccountView.load_categories, name='ajax_load_categories'),
+    
+    #path('ajax/load-categories/', 
+    #      views.AccountView.load_categories, name='ajax_load_categories'),
 ]

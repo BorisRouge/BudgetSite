@@ -39,7 +39,7 @@ class TransactionForm(forms.Form):
 class SelectForm(forms.Form):
     categories = forms.ModelChoiceField(queryset=Category.objects.all()) #how to get only the categories by user_id? StackO question No. 7299973
     
-    """Create an additional argument to limit the form to the current user."""
+    # Create an additional argument to limit the form to the current user.
     def __init__(self,  user, **kwargs) -> None:
         super(SelectForm, self).__init__(**kwargs)
         self.fields['categories'].queryset = Category.objects.filter(user=user)
