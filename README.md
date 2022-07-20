@@ -1,5 +1,6 @@
 # BudgetSite
-https://www.youtube.com/watch?v=HEjwdfutZlA&ab_channel=%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%9A%D0%BE%D0%BB%D0%BE%D1%82%D0%BE%D0%B2
+[Screencast from 20.07.2022 14_50_31.webm](https://user-images.githubusercontent.com/103374481/179931121-ce77014d-8d4a-4291-a767-b4f674a1f986.webm)
+
 A training project of a website with personal budgeting features./Тренировочный проект сайта с возможностями организации персонального бюджета.
 
 This is a work in progress./Незавершенная работа.
