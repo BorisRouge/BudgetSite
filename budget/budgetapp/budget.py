@@ -183,5 +183,13 @@ def display (category_name, ledger, balance): #called by print, might need some 
     return result
 
 
+# Collects values for the chart.js.    
     
-    
+def percentage (categories):
+  labels = []
+  balances = []
+  # total_balance ?
+  for category in categories:
+    labels.append(category.category_name)
+    balances.append(category.balance)
+  return {'labels':labels, 'balances':balances}

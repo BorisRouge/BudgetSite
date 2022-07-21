@@ -1,7 +1,5 @@
 #!/bin/sh
-cd venv/bin
-source activate
-cd ..
-cd ..
-cd budget
+
+source venv/bin/activate
+cd ~/Documents/django/third/budget
 python3 manage.py runserver

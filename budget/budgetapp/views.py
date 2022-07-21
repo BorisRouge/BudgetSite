@@ -1,17 +1,14 @@
 
-from unicodedata import category, decimal
 from decimal import Decimal
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect, 
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.views.generic import FormView
-from django.core.exceptions import ValidationError
 from .models import SiteUser, Category as CatModel, Ledger
 from .models import UserSelectedCategory as SelectedCat
 from .forms import *
-from .budget import Category as CatBudget, display
+from .budget import Category as CatBudget, display, percentage
 
 # Create your views here.
 #https://docs.djangoproject.com/en/4.0/intro/tutorial04/
@@ -26,9 +23,9 @@ def register_request(request):
             user.set_password(password)
             user.save()                       
             messages.success(request, "Registration successful")
+            login(request,user)
             return redirect ("account") 
-        messages.error(request, "Not registered.")
-        print ('nah, not good')
+        messages.error(request, "Not registered.")        
     form = CreateUserForm()
     return render (request=request, template_name="budgetapp/register.html", context={"form":form})#need the arguments here
 
@@ -40,43 +37,14 @@ def login_view (request):
             password = request.POST['password']
             print(username, password)
             user = authenticate(username=username, password=password)            
-            if user is not None:
-                print ("SiteUser is not none")
+            if user is not None:                
                 login(request,user) 
                 return redirect ("account") 
             else: messages.error(request, "Not logged in.")
     form = LoginForm()
     return render (request=request, template_name="budgetapp/login.html", context={"form":form})
-"""
-def account_view (request): #lots of work. need to process forms separately (stackoverflow-qustion:866272)
-    current_user = request.user
-    if request.method == "POST":        
-        transaction_form = TransactionForm(request.POST)
-        category_form = CategoryForm (request.POST)
-        if category_form.is_valid() or transaction_form.is_valid():
-            category_name = request.POST ["category"]
-            #urrent_user = request.user
-            CatB = CatBudget(category_name)# category name is centered with *** should be removed later and styled instead with CSS
-            CatM = CatModel(category_name=CatB.category_name, balance=CatB.balance, user_id = current_user)
-            
-            CatM.save()
-            print(CatM.category_id, CatM.category_name,CatM.balance, current_user.id)
-            #category.save() #how to connect budget.category and models.category?        
-            #amount = request.POST['amount']
-    user_categories = CatModel.objects.all()
-            
-    category_form = CategoryForm (request.GET)
-    transaction_form = TransactionForm(request.GET)
-    select_category_form = SelectForm (request.GET)
-    context = {"category_form":category_form,
-               "transaction_form":transaction_form,
-               "user_categories":user_categories,
-               "select_category_form":select_category_form}
-    return render (request=request, template_name="budgetapp/account.html", context=context)
-"""
-""" This is a test CBV for account """
-class AccountView (FormView):
-    
+
+class AccountView (FormView):    
 
     def get (self, request,*args, **kwargs):
         template = "budgetapp/account.html"
@@ -85,22 +53,16 @@ class AccountView (FormView):
         transaction_form = TransactionForm
         select_category_form = SelectForm (user=current_user)
         user_categories = CatModel.objects.filter (user = current_user)
-        # Input data for the display function. 
-        # Might be obsolete due to the external function "load_categories".
-        current_category = user_categories[0] # This will throw an error later, when a user has multiple cats       
-        current_ledger = Ledger.objects.filter (
-            category = current_category.category_id).values("amount", "description")       
-        category_display = display(category_name = current_category.category_name, 
-                                   ledger = current_ledger, 
-                                   balance = current_category.balance)
+        chart_data = percentage(user_categories)
+        
         # Context.
         context = {"category_form":category_form,
                     "transaction_form":transaction_form,
                     "user_categories":user_categories,
                     "select_category_form":select_category_form,
                     "current_user":current_user,
-                    "category_display":category_display,
-                    "current_category_balance":current_category.balance}              
+                    "chart_data":chart_data
+                    }              
         return render (request, template, context)
     
     def post (self, request):
@@ -181,7 +143,8 @@ def load_categories(request):
                                    ledger = current_ledger, 
                                    balance = current_category.balance)
         context = {'select_category_form':select_category_form,
-                   'category_display':category_display}
+                   'category_display':category_display,
+                   }
         print (request.GET['categories'])
         # Communicate selected category to other methods via a separate model field.
         try: 
