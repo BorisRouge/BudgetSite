@@ -13,8 +13,15 @@
 </div>
 
 <div id="categories_and_transactions">
-	<script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
-	<h2>{{user_categories}}</h2>	
+	<script
+		src="https://unpkg.com/htmx.org@1.7.0" 
+		integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" 
+		crossorigin="anonymous">
+	</script>
+	
+	
+
+	
 	
 	<form hx-get="account/load_categories" hx-trigger="change">
 		
@@ -22,11 +29,46 @@
 	</form>	
 	{{current_category_balance}}
 	
+	
+
+	
 	<form id='target' method="POST" action="account">
 		{% csrf_token %}
 		{{transaction_form.as_p}}
 		<button class="btn btn-secondary" type="submit" 
 				name="submit_transaction"> Submit</button>
+
+		{{chart_data|json_script:'chart_data'}}
+		<div>
+			<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+			</script>
+			<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+			<script>
+			const chart_data = JSON.parse(document.getElementById('chart_data').textContent)
+			var xValues = chart_data['labels'];
+			var yValues = chart_data['balances'];
+			var barColors = ["red", "green","blue","orange","brown"];
+				
+			new Chart("myChart", {
+				type: "pie",
+				data: {
+					labels: xValues,
+					datasets: [{
+					backgroundColor: barColors,
+					data: yValues
+					}]
+				},
+				options: {
+					title: {
+					display: true,
+					text: "Your categories"
+					}
+				}
+				});
+			</script>
+		</div>
+
 	{% for message in messages %}
 	{{ message }}
 	{% endfor %}
